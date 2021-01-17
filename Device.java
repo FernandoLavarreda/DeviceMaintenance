@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.Scanner;
 import java.io.FileWriter;
 import java.util.Calendar;
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
@@ -19,55 +20,45 @@ public abstract class Device{
 	protected String lastUpdateDate;
 	protected String description;
 	public abstract boolean maintenance();
+	public abstract void dumpFile(String dirDump) throws IOException;
 	
-	public Device(String ID, String lastServiceDate, String lastUpdateDate, String description){
+	public Device(String ID, String lastServiceDate, String lastUpdateDate, String description) throws InputMismatchException{
 		setID(ID);
 		setLasServiceDate(lastServiceDate);
 		setLastUpdateDate(lastUpdateDate);
 		setDescription(description);
 	}
 	
-	public static void DumpVehicleFile(String dirDump, Vehicle vh) throws IOException{
-		File destination = new File(dirDump+vh.getID());
-		if (destination.isFile()){
-			destination.delete();
+	
+	public static ArrayList<Device> loadFromFiles(String dirLoad, char type) throws IOException{
+		ArrayList<Device> devices = new ArrayList<Device>();
+		File files = new File(dirLoad);
+		File[] devs;
+		if(files.isDirectory()){
+			devs = files.listFiles();
+		}else{
+			throw new IOException("Not a directory");
 		}
-		try{
-			destination.createNewFile();
-			FileWriter nw = new FileWriter(destination);
-			nw.write(vh.getID()+"\n");
-			nw.write(vh.getLastServiceDate()+"\n");
-			nw.write(vh.getLastUpdateDate()+"\n");
-			nw.write(vh.getLastService()+"\n");
-			nw.write(vh.getKilometers()+"\n");
-			nw.write(vh.getDescription()+"\n");
-			nw.close();
-		}catch(Exception e){
-			throw new IOException("Problems writing to File");
+		switch(type){
+			case 'v':
+				for(File dev:devs){
+					devices.add(loadVehicleFile(dev.toString()));
+				}
+				break;
+			case 'm':
+				for(File dev:devs){
+					devices.add(loadMachineFile(dev.toString()));
+				}
+				break;
+			default:
+				break;
+			
 		}
+		return devices;
 	}
 	
-	public static void DumpMachineFile(String dirDump, Machine mch) throws IOException{
-		File destination = new File(dirDump+mch.getID());
-		if (destination.isFile()){
-			destination.delete();
-		}
-		try{
-			destination.createNewFile();
-			FileWriter nw = new FileWriter(destination);
-			nw.write(mch.getID()+"\n");
-			nw.write(mch.getLastServiceDate()+"\n");
-			nw.write(mch.getLastUpdateDate()+"\n");
-			nw.write(mch.getHoursLast()+"\n");
-			nw.write(mch.getHours()+"\n");
-			nw.write(mch.getDescription()+"\n");
-			nw.close();
-		}catch(Exception e){
-			throw new IOException("Problem writing to File");
-		}
-	}
 	
-	public static Vehicle LoadVehicleFile(String fileLoad) throws IOException{
+	public static Vehicle loadVehicleFile(String fileLoad) throws IOException{
 		Vehicle vehicle = null;
 		File load = new File(fileLoad);
 		if(load.isFile()){
@@ -92,7 +83,7 @@ public abstract class Device{
 		}
 	}
 	
-	public static Machine LoadMachineFile(String fileLoad) throws IOException{
+	public static Machine loadMachineFile(String fileLoad) throws IOException{
 		Machine machine = null;
 		File load = new File(fileLoad);
 		if(load.isFile()){

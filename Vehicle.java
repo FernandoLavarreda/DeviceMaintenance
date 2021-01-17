@@ -1,5 +1,7 @@
 
-
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.InputMismatchException;
 
 public class Vehicle extends Device{
@@ -8,10 +10,31 @@ public class Vehicle extends Device{
 	private final int KMFORSERVICE = 5000;
 	private final int SAFETYRADIUS = 150;
 	
-	public Vehicle(String ID, String lastServiceDate, String lastUpdateDate, String description, String kilometers, String lastService){
+	public Vehicle(String ID, String lastServiceDate, String lastUpdateDate, String description, String kilometers, String lastService) throws InputMismatchException{
 		super(ID, lastServiceDate, lastUpdateDate, description);
 		setKilometers(kilometers);
 		setLastService(lastService);
+	}
+	
+	
+	public void dumpFile(String dirDump) throws IOException{
+		File destination = new File(dirDump+"\\"+ID+".txt");
+		if (destination.isFile()){
+			destination.delete();
+		}
+		try{
+			destination.createNewFile();
+			FileWriter nw = new FileWriter(destination);
+			nw.write(ID+"\n");
+			nw.write(lastServiceDate+"\n");
+			nw.write(lastUpdateDate+"\n");
+			nw.write(lastService+"\n");
+			nw.write(kilometers+"\n");
+			nw.write(description+"\n");
+			nw.close();
+		}catch(Exception e){
+			throw new IOException("Problems writing to File");
+		}
 	}
 	
 	public int getKilometers(){

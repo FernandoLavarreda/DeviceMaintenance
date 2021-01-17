@@ -1,6 +1,9 @@
 
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Calendar;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.InputMismatchException;
 
@@ -12,10 +15,30 @@ public class Machine extends Device{
 	private final int DAYSFORSERVICE = 60;
 	private final int SAFETYRADIUSDAYS = 5;
 	
-	public Machine(String ID, String lastServiceDate, String lastUpdateDate, String description, String hours, String hoursLast){
+	public Machine(String ID, String lastServiceDate, String lastUpdateDate, String description, String hours, String hoursLast) throws InputMismatchException{
 		super(ID, lastServiceDate, lastUpdateDate, description);
 		setHours(hours);
 		setHoursLast(hoursLast);
+	}
+	
+	public void dumpFile(String dirDump) throws IOException{
+		File destination = new File(dirDump+"\\"+ID+".txt");
+		if (destination.isFile()){
+			destination.delete();
+		}
+		try{
+			destination.createNewFile();
+			FileWriter nw = new FileWriter(destination);
+			nw.write(ID+"\n");
+			nw.write(lastServiceDate+"\n");
+			nw.write(lastUpdateDate+"\n");
+			nw.write(hoursLast+"\n");
+			nw.write(hours+"\n");
+			nw.write(description+"\n");
+			nw.close();
+		}catch(Exception e){
+			throw new IOException("Problem writing to File");
+		}
 	}
 	
 	public int getHours(){
