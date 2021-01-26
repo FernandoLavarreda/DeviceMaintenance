@@ -1,4 +1,10 @@
 
+/*
+	@author Fernando Lavarreda
+	@version 25/01/2021
+	GUI to interact with EvaluateDevices
+*/
+
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -21,6 +27,10 @@ public class EvaluateDevicesGraphics extends JPanel{
 	private boolean machines = false;
 	//
 	
+	/*
+	 *Constructor of the class
+	 *@param eval, class to manage the devices
+	*/
 	public EvaluateDevicesGraphics(EvaluateDevices eval){
 		this.eval = eval;
 		Color color = new Color(114, 164, 179);
@@ -199,6 +209,13 @@ public class EvaluateDevicesGraphics extends JPanel{
 		
 	}
 	
+	private void clearTextFields(){
+		for(int i=0; i<5;i++){
+			deviceInfo[i].setText("");
+		}
+	}
+	
+	//Reresh the tabs
 	public void allRefresh(){
 		refreshMachines(eval.viewMachines());
 		refreshVehicles(eval.viewVehicles());
@@ -267,6 +284,8 @@ public class EvaluateDevicesGraphics extends JPanel{
 	private class ButtonListener implements ActionListener{
 		public void actionPerformed(ActionEvent e){
 			if(e.getSource() == acciones){
+				clearTextFields();
+				id.setText("");
 				String selection = acciones.getSelectedItem().toString();
 				if(selection.equals("Eliminar Maquinaria")){
 					addmachine.setVisible(false);
@@ -353,10 +372,14 @@ public class EvaluateDevicesGraphics extends JPanel{
 				machines = false;
 				deviceExplained[2].setText("Kilometraje Actual");
 				deviceExplained[3].setText(" Kilometraje Ultimo Servicio");
+				clearTextFields();
+				
 			}else if(e.getSource() == addmachine){
 				machines = true;
 				deviceExplained[2].setText("Horas de Servicio");
 				deviceExplained[3].setText(" Horas Ultimo Servicio");
+				clearTextFields();
+				
 			}else if(e.getSource() == modify){
 				try{
 					if(!deviceInfo[5].getText().equals("")){
@@ -365,10 +388,10 @@ public class EvaluateDevicesGraphics extends JPanel{
 						refreshDiagnostics(eval.maintenanceCheck());
 						refreshMachines(eval.viewMachines());
 						refreshVehicles(eval.viewVehicles());
+						clearTextFields();
 					}
 				}catch(InputMismatchException except){
 					feedback.setText(except.getMessage());
-					System.out.println("Aqui esta el error");
 				}
 				deviceInfo[5].setText("");
 			}else if(e.getSource() == deleteDevice){
@@ -387,6 +410,7 @@ public class EvaluateDevicesGraphics extends JPanel{
 						eval.addMachine(deviceInfo[0].getText(), deviceInfo[1].getText(), deviceInfo[4].getText(), deviceInfo[2].getText(), deviceInfo[3].getText());
 						refreshMachines(eval.viewMachines());
 						refreshDiagnostics(eval.maintenanceCheck());
+						clearTextFields();
 					}catch(InputMismatchException addicion){
 						feedback.setText(addicion.getMessage());
 					}

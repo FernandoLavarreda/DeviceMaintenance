@@ -1,4 +1,10 @@
 
+/*
+	@author Fernando Lavarreda
+	@version 25/01/2021
+	JFrame to control information to be saved
+*/
+
 import java.io.File;
 import javax.swing.JFrame;
 import java.awt.event.WindowAdapter;
@@ -10,6 +16,13 @@ public class MainWindow extends JFrame{
 	private String routeMachines;
 	private EvaluateDevices dvmm;
 	
+	/*
+	 *Constructor of the class
+	 *@param windowTitle, title to appear on the frame
+	 *@param routeVehicles, path to save the vehicles
+	 *@param routeMachines, path to save the machines
+	 *@param dvmm, class to operate on the intelligence of the program
+	*/
 	public MainWindow(String windowTitle, String routeVehicles, String routeMachines, EvaluateDevices dvmm){
 		super(windowTitle);
 		this.routeVehicles = routeVehicles;
@@ -26,6 +39,7 @@ public class MainWindow extends JFrame{
 		});
 	}
 	
+	//Methodd to be called when closing JFrame save info
 	private void saveChanges(){
 		File dir1 = new File(routeVehicles);
 		File dir2 = new File(routeMachines);

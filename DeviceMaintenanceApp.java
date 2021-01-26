@@ -1,4 +1,10 @@
 
+/*
+	@author Fernando Lavarreda
+	@version 25/01/2021
+	Application to keep track of device maintenance
+*/
+
 import java.io.File;
 import javax.swing.*;
 import java.io.IOException;
@@ -6,6 +12,11 @@ import java.util.ArrayList;
 
 public class DeviceMaintenanceApp{
 	
+	
+	/*
+	 *Start of the program
+	 *@param args, not defined
+	*/
 	public static void main(String[] args){
 		EvaluateDevices dvmm = new EvaluateDevices();
 		EvaluateDevicesGraphics graphics = new EvaluateDevicesGraphics(dvmm);
