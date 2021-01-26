@@ -55,10 +55,10 @@ public class Machine extends Device{
 		try{
 			time = Integer.parseInt(h);
 		}catch(Exception e){
-			throw new InputMismatchException("Not a number");
+			throw new InputMismatchException("Las horas deben ser numero");
 		}
 		if(hours>time){
-			throw new InputMismatchException("Number smaller than expected");
+			throw new InputMismatchException("Valor de horas menor al esperado");
 		}else{
 			hours = time;
 		}
@@ -69,10 +69,10 @@ public class Machine extends Device{
 		try{
 			time = Integer.parseInt(hl);
 		}catch(Exception e){
-			throw new InputMismatchException("Not a number");
+			throw new InputMismatchException("Las horas deben ser numero");
 		}
 		if(hoursLast>time){
-			throw new InputMismatchException("Number smaller than expected");
+			throw new InputMismatchException("Valor de horas menor al esperado");
 		}else{
 			hoursLast = time;
 		}
@@ -88,6 +88,10 @@ public class Machine extends Device{
 			return true;
 		else
 			return false;
+	}
+	
+	public String toString(){
+		return super.toString()+"\nHoras de trajo: "+getHours()+"\nHoras en ultimo servicio: "+getHoursLast();
 	}
 	
 }

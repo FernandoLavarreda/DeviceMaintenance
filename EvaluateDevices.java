@@ -1,12 +1,13 @@
 /*
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
+	@author Fernando Lavarreda
+	@version 22/01/2021
+	Class to manage maintenance required for the devices
 */
 
 import java.util.Iterator;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 public class EvaluateDevices{
 	private ArrayList<Device> devices = new ArrayList<Device>();
@@ -38,44 +39,48 @@ public class EvaluateDevices{
 		}
 	}
 	
+	public void editDevice(Device edited, String...fields)throws InputMismatchException{
+		edited.setLastServiceDate(fields[0]);
+		edited.setLastUpdateDate(fields[1]);
+		edited.setDescription(fields[2]);
+		if(edited instanceof Vehicle){
+			Vehicle edits = (Vehicle)edited;
+			edits.setKilometers(fields[3]);
+			edits.setLastService(fields[4]);
+		}else if(edited instanceof Machine){
+			Machine edits = (Machine)edited;
+			edits.setHours(fields[3]);
+			edits.setHoursLast(fields[4]);
+		}else{
+			
+		}
+	}
+	
 	public void addDevices(ArrayList<Device> dvs){
 		devices.addAll(dvs);
 	}
 	
-	public boolean addVehicle(String lastServiceDate, String lastUpdateDate, String description, String kilometers, String lastService){
-		boolean status;
+	public void addVehicle(String lastServiceDate, String lastUpdateDate, String description, String kilometers, String lastService) throws InputMismatchException{
 		int biggestID = 0;
 		for(Device dv:devices){
-			if(dv.getID()>biggestID){
+			if(dv.getID()>=biggestID){
 				biggestID = dv.getID()+1;
 			}
 		}
 		String ID = Integer.toString(biggestID);
-		try{
-			devices.add(new Vehicle(ID, lastServiceDate, lastUpdateDate, description, kilometers, lastService));
-			status = true;
-		}catch(Exception e){
-			status = false;
-		}
-		return status;
+		devices.add(new Vehicle(ID, lastServiceDate, lastUpdateDate, description, kilometers, lastService));
+	
 	}
 	
-	public boolean addMachine(String lastServiceDate, String lastUpdateDate, String description, String hours, String hoursLast){
-		boolean status;
+	public void addMachine(String lastServiceDate, String lastUpdateDate, String description, String hours, String hoursLast) throws InputMismatchException{
 		int biggestID = 0;
 		for(Device dv:devices){
-			if(dv.getID()>biggestID){
+			if(dv.getID()>=biggestID){
 				biggestID = dv.getID()+1;
 			}
 		}
 		String ID = Integer.toString(biggestID);
-		try{
-			devices.add(new Machine(ID, lastServiceDate, lastUpdateDate, description, hours, hoursLast));
-			status = true;
-		}catch(Exception e){
-			status = false;
-		}
-		return status;
+		devices.add(new Machine(ID, lastServiceDate, lastUpdateDate, description, hours, hoursLast));
 	}
 	
 	public ArrayList<Device> maintenanceCheck(){

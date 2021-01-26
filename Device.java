@@ -24,7 +24,7 @@ public abstract class Device{
 	
 	public Device(String ID, String lastServiceDate, String lastUpdateDate, String description) throws InputMismatchException{
 		setID(ID);
-		setLasServiceDate(lastServiceDate);
+		setLastServiceDate(lastServiceDate);
 		setLastUpdateDate(lastUpdateDate);
 		setDescription(description);
 	}
@@ -143,16 +143,38 @@ public abstract class Device{
 		this.ID = temp;
 	}
 	
-	public void setLasServiceDate(String lastServiceDate){
+	public void setLastServiceDate(String lastServiceDate) throws InputMismatchException{
+		if(lastServiceDate.length()!=10){
+			throw new InputMismatchException("Formato de fecha: dd-MM-yyyy");
+		}
+		try{
+			DateTimeFormatter why = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			LocalDate lc1 = LocalDate.parse(lastServiceDate, why);
+		}catch(Exception e){
+			throw new InputMismatchException("Formato de fecha: dd-MM-yyyy");
+		}
 		this.lastServiceDate = lastServiceDate;
 	}
 	
-	public void setLastUpdateDate(String lastUpdateDate){
+	public void setLastUpdateDate(String lastUpdateDate) throws InputMismatchException{
+		if(lastServiceDate.length()!=10){
+			throw new InputMismatchException("Formato de fecha: dd-MM-yyyy");
+		}
+		try{
+			DateTimeFormatter why = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			LocalDate lc1 = LocalDate.parse(lastServiceDate, why);
+		}catch(Exception e){
+			throw new InputMismatchException("Formato de fecha: dd-MM-yyyy");
+		}
 		this.lastUpdateDate = lastUpdateDate;
 	}
 	
 	public void setDescription(String description){
 		this.description = description;
+	}
+	
+	public String toString(){
+		return "ID: "+getID()+"\nDate of last Service: "+getLastServiceDate()+"\nLast Time data was updated: "+getLastUpdateDate()+"\nDescription: "+getDescription();
 	}
 	
 }

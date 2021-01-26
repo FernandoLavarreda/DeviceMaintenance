@@ -51,10 +51,10 @@ public class Vehicle extends Device{
 		try{
 			temp_km = Integer.parseInt(last);
 		}catch(Exception e){
-			throw new InputMismatchException("Number not an integer");
+			throw new InputMismatchException("Kilometros deben ser un numero entero");
 		}
 		if(this.lastService>temp_km){
-			throw new InputMismatchException("Number entered is smaller than expected");
+			throw new InputMismatchException("Valor de kilometros menor al esperado");
 		}else{
 			this.lastService = temp_km;
 		}
@@ -65,10 +65,10 @@ public class Vehicle extends Device{
 		try{
 			temp_km = Integer.parseInt(km);
 		}catch(Exception e){
-			throw new InputMismatchException("Number not an integer");
+			throw new InputMismatchException("Kilometros deben ser un numero entero");
 		}
 		if(this.kilometers>temp_km){
-			throw new InputMismatchException("Number entered is smaller than expected");
+			throw new InputMismatchException("Valor de kilometros menor al esperado");
 		}else{
 			this.kilometers = temp_km;
 		}
@@ -79,6 +79,10 @@ public class Vehicle extends Device{
 			return true;
 		else
 			return false;
+	}
+	
+	public String toString(){
+		return super.toString()+"Kilometros: "+getKilometers()+"\nKilometraje en Ultimo Servicio: "+getLastService()+"\n";
 	}
 	
 }

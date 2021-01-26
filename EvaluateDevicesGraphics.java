@@ -2,19 +2,24 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-
+import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 public class EvaluateDevicesGraphics extends JPanel{
 	private EvaluateDevices eval;
 	private JComboBox<String> acciones;
 	private JTextField[] deviceInfo = new JTextField[6];
 	private JLabel[] deviceExplained = new JLabel[6];
-	private JButton addvehicle, addmachine, modify, addDevice;
+	private JButton addvehicle, addmachine, modify, addDevice, deleteDevice;
 	private JTextField id = new JTextField();
-	private JLabel info;
+	private JLabel info, feedback;
 	private JPanel presentVehicles = new JPanel();
 	private JPanel presentMachines = new JPanel();
+	private JPanel presentDiagnostics = new JPanel();
 	
+	//Important alter this line for future addition to more devices, currently only a boolean system allows for only the vehicles and machines
+	private boolean machines = false;
+	//
 	
 	public EvaluateDevicesGraphics(EvaluateDevices eval){
 		this.eval = eval;
@@ -61,7 +66,7 @@ public class EvaluateDevicesGraphics extends JPanel{
 		JLabel sub2 = new JLabel("Accion a Ejecutar: ");
 		add(sub2, gcn);
 		
-		String[] acts = {"Adicionar Maquinaria", "Eliminar Maquinaria", "Actualizar Datos"};
+		String[] acts = {"Adicionar Maquinaria", "Diagnostico", "Eliminar Maquinaria", "Actualizar Datos"};
 		acciones = new JComboBox<String>(acts);
 		gcn.gridx = 2;
 		add(acciones, gcn);
@@ -92,11 +97,11 @@ public class EvaluateDevicesGraphics extends JPanel{
 		
 		gcn.gridx = 2;
 		addvehicle = new JButton("Agregar Vehiculo");
-		add(addvehicle);
+		add(addvehicle, gcn);
 		addvehicle.setVisible(false);
 		addvehicle.setEnabled(false);
 		/*
-		Finaliza la instanciacion de los bootnes
+		Finaliza la instanciacion de los botones
 		*/
 		
 		
@@ -111,7 +116,7 @@ public class EvaluateDevicesGraphics extends JPanel{
 		gcn.gridy = 6;
 		gcn.gridwidth = 1;
 		deviceExplained[0] = new JLabel("Fecha de Ultimo Servicio");
-		deviceExplained[1] = new JLabel("  Ultima Actualizacion");
+		deviceExplained[1] = new JLabel("  Ultima Actualizacion de Datos");
 		deviceExplained[2] = new JLabel("Kilometraje Actual");
 		deviceExplained[3] = new JLabel("  Kilometraje Ultimo Servicio");
 		deviceExplained[4] = new JLabel("Descripcion");
@@ -140,9 +145,19 @@ public class EvaluateDevicesGraphics extends JPanel{
 		gcn.insets = new Insets(0, 4, 0, 0);
 		modify = new JButton("Modificar");
 		addDevice = new JButton("Agregar");
+		deleteDevice = new JButton("Eliminar");
+		deleteDevice.setVisible(false);
+		deleteDevice.setEnabled(false);
+		modify.setVisible(false);
+		modify.setEnabled(false);
 		add(modify, gcn);
+		add(deleteDevice, gcn);
+		add(addDevice, gcn);
 		
-		
+		feedback = new JLabel("Retroalimentar");
+		gcn.insets = new Insets(0, 0, 0, 0);
+		gcn.gridx = 0;
+		add(feedback,gcn);
 		
 		gcn.gridx = 4;
 		gcn.gridy = 2;
@@ -150,20 +165,275 @@ public class EvaluateDevicesGraphics extends JPanel{
 		gcn.gridheight = 8;
 		gcn.fill = GridBagConstraints.BOTH;
 		gcn.insets = new Insets(0, 8, 0, 0);
+		
+		
+		presentDiagnostics.setLayout(new BoxLayout(presentDiagnostics, BoxLayout.Y_AXIS));
+		presentMachines.setLayout(new BoxLayout(presentMachines, BoxLayout.Y_AXIS));
+		presentVehicles.setLayout(new BoxLayout(presentVehicles, BoxLayout.Y_AXIS));
+		
 		JTabbedPane tabs = new JTabbedPane();
 		JScrollPane scrollMaquinas = new JScrollPane(presentMachines, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		JScrollPane scrollVehiculos = new JScrollPane(presentVehicles, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scrollDiagnosticos = new JScrollPane(presentDiagnostics, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		tabs.addTab("Maquinas", scrollMaquinas);
 		tabs.addTab("Vehiculos", scrollVehiculos);
+		tabs.addTab("Diagnosticos", scrollDiagnosticos);
 		add(tabs, gcn);
+		
+		
+		
 		
 		setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		
+		id.addActionListener(new ButtonListener());
+		acciones.addActionListener(new ButtonListener());
+		addvehicle.addActionListener(new ButtonListener());
+		addmachine.addActionListener(new ButtonListener());
+		modify.addActionListener(new ButtonListener());
+		addDevice.addActionListener(new ButtonListener());
+		deleteDevice.addActionListener(new ButtonListener());
+		
+		acciones.setSelectedIndex(0);
+		
+		
+		
 	}
+	
+	public void allRefresh(){
+		refreshMachines(eval.viewMachines());
+		refreshVehicles(eval.viewVehicles());
+		refreshDiagnostics(eval.maintenanceCheck());
+	}
+	
+	private void refreshVehicles(ArrayList<Vehicle> vhs){
+		presentVehicles.removeAll();
+		for(Vehicle v: vhs){
+			presentVehicles.add(vehicleToLabel(v));
+		}
+		presentVehicles.revalidate();
+		presentVehicles.repaint();
+	}
+	
+	private void refreshMachines(ArrayList<Machine> mchs){
+		presentMachines.removeAll();
+		for(Machine m: mchs){
+			presentMachines.add(machineToLabel(m));
+		}
+		presentMachines.revalidate();
+		presentMachines.repaint();
+	}
+	
+	private void refreshDiagnostics(ArrayList<Device> dvs){
+		presentDiagnostics.removeAll();
+		for(Device d: dvs){
+			if(d instanceof Vehicle){
+				presentDiagnostics.add(vehicleToLabel((Vehicle)d));
+			}else if(d instanceof Machine){
+				presentDiagnostics.add(machineToLabel((Machine)d));
+			}else{
+				
+			}
+		}
+		presentMachines.revalidate();
+		presentMachines.repaint();
+	}
+	
+	/*
+	 *@param v, vehiculo definido por la clase Vehicle
+	 *@return presentation, JLabel to graphically represent a Vehicle
+	 */
+	private JLabel vehicleToLabel(Vehicle v){
+		String desc = "<html>ID: "+v.getID()+"<br>Kilometraje: "+v.getKilometers()+"\tKm. Ultimo servicio: "+v.getLastService()
+					+ "<br>Ultima Actualizacion: "+v.getLastUpdateDate()+"\tFecha Ultimo Servicio: "+v.getLastServiceDate()
+					+ "<br>Descripcion:<br>"+v.getDescription()+"</html>";
+		JLabel presentation = new JLabel(desc);
+		return presentation;
+	}
+	
+	/*
+	 *@param e, maquina definda por la clase Machine
+	 *@return presentation, JLabel to graphically represent a Machine 
+	 */
+	private JLabel machineToLabel(Machine e){
+		String desc = "<html>ID: "+e.getID()+"<br>Horas de trabajo: "+e.getHours()+"\tHrs. Ultimo servicio: "+e.getHoursLast()
+					+ "<br>Ultima Actualizacion: "+e.getLastUpdateDate()+"\tFecha Ultimo Servicio: "+e.getLastServiceDate()
+					+ "<br>Descripcion:<br>"+e.getDescription()+"</html>";
+		JLabel presentation = new JLabel(desc);
+		return presentation;
+	}
+	
+	
 	
 	private class ButtonListener implements ActionListener{
 		public void actionPerformed(ActionEvent e){
-			
+			if(e.getSource() == acciones){
+				String selection = acciones.getSelectedItem().toString();
+				if(selection.equals("Eliminar Maquinaria")){
+					addmachine.setVisible(false);
+					addmachine.setEnabled(false);
+					addvehicle.setVisible(false);
+					addvehicle.setEnabled(false);
+					
+					modify.setEnabled(false);
+					modify.setVisible(false);
+					addDevice.setEnabled(false);
+					addDevice.setVisible(false);
+					
+					for(JLabel t: deviceExplained){
+						t.setVisible(false);
+					}
+					
+					for(JTextField t: deviceInfo){
+						t.setVisible(false);
+						t.setEnabled(false);
+					}
+					
+					info.setVisible(true);
+					id.setVisible(true);
+					id.setEnabled(true);
+					deleteDevice.setEnabled(true);
+					deleteDevice.setVisible(true);
+					
+				}else if(selection.equals("Adicionar Maquinaria")){
+					modify.setEnabled(false);
+					modify.setVisible(false);
+					info.setVisible(false);
+					id.setVisible(false);
+					id.setEnabled(false);
+					deleteDevice.setEnabled(false);
+					deleteDevice.setVisible(false);
+					
+					addmachine.setVisible(true);
+					addmachine.setEnabled(true);
+					addvehicle.setVisible(true);
+					addvehicle.setEnabled(true);
+					addDevice.setEnabled(true);
+					addDevice.setVisible(true);
+					
+					for(int i = 0; i<5; i++){
+						deviceExplained[i].setVisible(true);
+					}
+					
+					for(int i = 0; i<5; i++){
+						deviceInfo[i].setVisible(true);
+						deviceInfo[i].setEnabled(true);
+					}
+					
+					
+				}else if(selection.equals("Actualizar Datos")){
+					addmachine.setVisible(false);
+					addmachine.setEnabled(false);
+					addvehicle.setVisible(false);
+					addvehicle.setEnabled(false);
+					addDevice.setEnabled(false);
+					addDevice.setVisible(false);
+					deleteDevice.setEnabled(false);
+					deleteDevice.setVisible(false);
+					
+					modify.setEnabled(true);
+					modify.setVisible(true);
+					info.setVisible(true);
+					id.setVisible(true);
+					id.setEnabled(true);
+					
+					for(int i = 0; i<5; i++){
+						deviceExplained[i].setVisible(true);
+					}
+					
+					for(int i = 0; i<5; i++){
+						deviceInfo[i].setVisible(true);
+						deviceInfo[i].setEnabled(true);
+					}
+					
+				}else{
+					refreshDiagnostics(eval.maintenanceCheck());
+				}
+				
+			}else if(e.getSource() == addvehicle){
+				machines = false;
+				deviceExplained[2].setText("Kilometraje Actual");
+				deviceExplained[3].setText(" Kilometraje Ultimo Servicio");
+			}else if(e.getSource() == addmachine){
+				machines = true;
+				deviceExplained[2].setText("Horas de Servicio");
+				deviceExplained[3].setText(" Horas Ultimo Servicio");
+			}else if(e.getSource() == modify){
+				try{
+					if(!deviceInfo[5].getText().equals("")){
+						int deviceID = Integer.parseInt(deviceInfo[5].getText());
+						eval.editDevice(eval.getDevice(deviceID), deviceInfo[0].getText(), deviceInfo[1].getText(), deviceInfo[4].getText(), deviceInfo[2].getText(), deviceInfo[3].getText());
+						refreshDiagnostics(eval.maintenanceCheck());
+						refreshMachines(eval.viewMachines());
+						refreshVehicles(eval.viewVehicles());
+					}
+				}catch(InputMismatchException except){
+					feedback.setText(except.getMessage());
+					System.out.println("Aqui esta el error");
+				}
+				deviceInfo[5].setText("");
+			}else if(e.getSource() == deleteDevice){
+				try{
+					int index = Integer.parseInt(id.getText());
+					eval.removeDevice(index);
+					refreshMachines(eval.viewMachines());
+					refreshVehicles(eval.viewVehicles());
+					refreshDiagnostics(eval.maintenanceCheck());
+				}catch(Exception noNum){
+					feedback.setText("El indice debe ser una valor numerico");
+				}
+			}else if(e.getSource() == addDevice){
+				if(machines){
+					try{
+						eval.addMachine(deviceInfo[0].getText(), deviceInfo[1].getText(), deviceInfo[4].getText(), deviceInfo[2].getText(), deviceInfo[3].getText());
+						refreshMachines(eval.viewMachines());
+						refreshDiagnostics(eval.maintenanceCheck());
+					}catch(InputMismatchException addicion){
+						feedback.setText(addicion.getMessage());
+					}
+				}else{
+					try{
+						eval.addVehicle(deviceInfo[0].getText(), deviceInfo[1].getText(), deviceInfo[4].getText(), deviceInfo[2].getText(), deviceInfo[3].getText());
+						refreshVehicles(eval.viewVehicles());
+						refreshDiagnostics(eval.maintenanceCheck());
+					}catch(InputMismatchException addicion2){
+						feedback.setText(addicion2.getMessage());
+					}
+				}
+				
+				
+			}else if(e.getSource() == id){
+				if(acciones.getSelectedItem().toString().equals("Actualizar Datos")){
+					try{
+						int id_ = Integer.parseInt(id.getText());
+						Device obtained = eval.getDevice(id_);
+						if(obtained != null){
+							deviceInfo[0].setText(obtained.getLastServiceDate());
+							deviceInfo[1].setText(obtained.getLastUpdateDate());
+							deviceInfo[4].setText(obtained.getDescription());
+							deviceInfo[5].setText(""+obtained.getID());
+							if(obtained instanceof Vehicle){
+								deviceExplained[2].setText("Kilometraje Actual");
+								deviceExplained[3].setText("  Kilometraje Ultimo Servicio");
+								Vehicle vhi = (Vehicle)obtained;
+								deviceInfo[2].setText(""+vhi.getKilometers());
+								deviceInfo[3].setText(""+vhi.getLastService());
+							}else if(obtained instanceof Machine){
+								deviceExplained[2].setText("Horas de Servicio");
+								deviceExplained[3].setText(" Horas Ultimo Servicio");
+								Machine mchi = (Machine)obtained;
+								deviceInfo[2].setText(""+mchi.getHours());
+								deviceInfo[3].setText(""+mchi.getHoursLast());
+							}else{
+								
+							}
+						}else{
+							feedback.setText("ID no hallado");
+						}
+					}catch(Exception NoNum){
+						feedback.setText("Valor no numerico");
+					}
+				}
+			}
 		}
 		
 	}
