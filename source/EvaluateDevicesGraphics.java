@@ -1,10 +1,11 @@
-
+package backend;
 /*
 	@author Fernando Lavarreda
 	@version 25/01/2021
 	GUI to interact with EvaluateDevices
 */
 
+import backend.devices.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;

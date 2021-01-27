@@ -1,4 +1,4 @@
-
+package MaintenanceApp;
 /*
 	@author Fernando Lavarreda
 	@version 25/01/2021
@@ -7,8 +7,12 @@
 
 import java.io.File;
 import javax.swing.*;
+import backend.MainWindow;
 import java.io.IOException;
 import java.util.ArrayList;
+import backend.devices.Device;
+import backend.EvaluateDevices;
+import backend.EvaluateDevicesGraphics;
 
 public class DeviceMaintenanceApp{
 	

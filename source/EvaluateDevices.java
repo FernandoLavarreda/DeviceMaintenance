@@ -1,10 +1,11 @@
-
+package backend;
 /*
 	@author Fernando Lavarreda
 	@version 25/01/2021
 	Class to manage maintenance required for the devices: Vehicle, Machine
 */
 
+import backend.devices.*;
 import java.util.Iterator;
 import java.io.IOException;
 import java.util.ArrayList;
