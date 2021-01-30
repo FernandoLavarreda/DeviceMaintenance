@@ -225,8 +225,9 @@ public class EvaluateDevicesGraphics extends JPanel{
 	
 	private void refreshVehicles(ArrayList<Vehicle> vhs){
 		presentVehicles.removeAll();
+		int i = 0;
 		for(Vehicle v: vhs){
-			presentVehicles.add(vehicleToLabel(v));
+			presentVehicles.add(vehicleToLabel(v, i++));
 		}
 		presentVehicles.revalidate();
 		presentVehicles.repaint();
@@ -234,8 +235,9 @@ public class EvaluateDevicesGraphics extends JPanel{
 	
 	private void refreshMachines(ArrayList<Machine> mchs){
 		presentMachines.removeAll();
+		int i = 0;
 		for(Machine m: mchs){
-			presentMachines.add(machineToLabel(m));
+			presentMachines.add(machineToLabel(m, i++));
 		}
 		presentMachines.revalidate();
 		presentMachines.repaint();
@@ -243,11 +245,12 @@ public class EvaluateDevicesGraphics extends JPanel{
 	
 	private void refreshDiagnostics(ArrayList<Device> dvs){
 		presentDiagnostics.removeAll();
+		int i = 0;
 		for(Device d: dvs){
 			if(d instanceof Vehicle){
-				presentDiagnostics.add(vehicleToLabel((Vehicle)d));
+				presentDiagnostics.add(vehicleToLabel((Vehicle)d, i++));
 			}else if(d instanceof Machine){
-				presentDiagnostics.add(machineToLabel((Machine)d));
+				presentDiagnostics.add(machineToLabel((Machine)d, i++));
 			}else{
 				
 			}
@@ -260,11 +263,17 @@ public class EvaluateDevicesGraphics extends JPanel{
 	 *@param v, vehiculo definido por la clase Vehicle
 	 *@return presentation, JLabel to graphically represent a Vehicle
 	 */
-	private JLabel vehicleToLabel(Vehicle v){
-		String desc = "<html>ID: "+v.getID()+"<br>Kilometraje: "+v.getKilometers()+"\tKm. Ultimo servicio: "+v.getLastService()
-					+ "<br>Ultima Actualizacion: "+v.getLastUpdateDate()+"\tFecha Ultimo Servicio: "+v.getLastServiceDate()
-					+ "<br>Descripcion:<br>"+v.getDescription()+"</html>";
+	private JLabel vehicleToLabel(Vehicle v, int color){
+		String desc = "<html>ID: "+v.getID()+"<br>Kilometraje: "+v.getKilometers()+"Km. Ultimo servicio: "+v.getLastService()
+					+ "<br>Ultima Actualizacion: "+v.getLastUpdateDate()+"<br>Fecha Ultimo Servicio: "+v.getLastServiceDate()
+					+ "<br>Descripcion:<br>"+v.getDescription()+"<br>-----------------------</html>";
 		JLabel presentation = new JLabel(desc);
+		presentation.setOpaque(true);
+		if(color%2 == 0){
+			presentation.setBackground(new Color(223, 239, 240));
+		}else{
+			presentation.setBackground(new Color(231, 245, 223));
+		}
 		return presentation;
 	}
 	
@@ -272,11 +281,17 @@ public class EvaluateDevicesGraphics extends JPanel{
 	 *@param e, maquina definda por la clase Machine
 	 *@return presentation, JLabel to graphically represent a Machine 
 	 */
-	private JLabel machineToLabel(Machine e){
+	private JLabel machineToLabel(Machine e, int color){
 		String desc = "<html>ID: "+e.getID()+"<br>Horas de trabajo: "+e.getHours()+"\tHrs. Ultimo servicio: "+e.getHoursLast()
-					+ "<br>Ultima Actualizacion: "+e.getLastUpdateDate()+"\tFecha Ultimo Servicio: "+e.getLastServiceDate()
-					+ "<br>Descripcion:<br>"+e.getDescription()+"</html>";
+					+ "<br>Ultima Actualizacion: "+e.getLastUpdateDate()+"<br>Fecha Ultimo Servicio: "+e.getLastServiceDate()
+					+ "<br>Descripcion:<br>"+e.getDescription()+"<br>-----------------------</html>";
 		JLabel presentation = new JLabel(desc);
+		presentation.setOpaque(true);
+		if(color%2 == 0){
+			presentation.setBackground(new Color(223, 239, 240));
+		}else{
+			presentation.setBackground(new Color(231, 245, 223));
+		}
 		return presentation;
 	}
 	

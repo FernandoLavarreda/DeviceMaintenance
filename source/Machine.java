@@ -16,7 +16,7 @@ public class Machine extends Device{
 	private int hours = 0;
 	private int hoursLast = 0;
 	private final int TIMEFORSERVICE = 250;
-	private final int SAFETYRADIUS = 10;
+	private final int SAFETYRADIUS = 40;
 	private final int DAYSFORSERVICE = 60;
 	private final int SAFETYRADIUSDAYS = 5;
 	
